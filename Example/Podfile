@@ -1,0 +1,11 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
+target 'SYNPhotoPicker', :exclusive => true do
+  pod "SYNPhotoPicker", :path => "../"
+end
+
+target 'Tests', :exclusive => true do
+  pod "SYNPhotoPicker", :path => "../"
+
+  
+end
