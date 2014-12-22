@@ -50,6 +50,8 @@
     NSMutableDictionary *content;
 }
 
+@synthesize delegate;
+
 #pragma mark - Initialization
 
 - (id)init
@@ -239,15 +241,15 @@
     
     NSArray *photoArray = [content objectForKey:[NSString stringWithFormat:@"%lu", (unsigned long)SYNPhotoPickerCameraRoll]];
     SYNAssetImageData *data = (SYNAssetImageData *)photoArray[indexPath.row];
-    self.finalizationBlock(self, nil, @[data.url]);
+    
+    [delegate didSelectAssetLibraryURL:[NSString stringWithFormat:@"%@", data.url]];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)didSelectItem:(NSIndexPath *)indexPath forOption:(SYNPhotoPickerOptions)option
 {
-    NSArray *imageArray = [content objectForKey:[NSString stringWithFormat:@"%lu", (unsigned long)option]];
-    self.finalizationBlock(self, nil, @[imageArray[indexPath.row]]);
+    [self.delegate didSelectItemForIndexPath:indexPath forOption:option];
 }
 
 #pragma mark - TabBar delegates
@@ -272,7 +274,7 @@
 {
     [searchBar resignFirstResponder];
     
-    self.websearchBlock(searchBar.text);
+    [self.delegate didSearchWithString:searchBar.text];
 }
 
 - (void)toggleSearchBarVisibility
@@ -300,15 +302,14 @@
                                                          completionBlock:^(NSURL *assetURL, NSError *error)
              {
                  if (error) {
-                     self.finalizationBlock(self, error, nil);
+                     NSLog(@"SYNPhotoPickerViewController: Error accessing image: %@", error.localizedDescription);
                      return;
                  }
                  
                  // Photo was taken
-                 self.finalizationBlock(self, nil, @[assetURL]);
+                 [self.delegate didSelectAssetLibraryURL:[NSString stringWithFormat:@"%@", assetURL]];
              }];
         } else {
-            // Camera roll image was selected
             [picker dismissViewControllerAnimated:YES completion:nil];
         }
     }];
@@ -362,7 +363,7 @@
         [self addPhotosFromAssetGroup:group toArray:photoArray];
         
     } failureBlock:^(NSError *error) {
-        self.finalizationBlock(self, error, nil);
+        NSLog(@"SYNPhotoPickerViewController: Error loading photos: %@", error.localizedDescription);
     }];
 }
 

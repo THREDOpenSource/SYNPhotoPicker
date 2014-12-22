@@ -7,13 +7,14 @@
 //
 
 #import "SYNViewController.h"
-#import <SYNPhotoPicker/SYNPhotoPickerViewController.h>
 
 @interface SYNViewController ()
 
 @end
 
-@implementation SYNViewController
+@implementation SYNViewController {
+    SYNPhotoPickerViewController *picker;
+}
 
 - (void)viewDidLoad
 {
@@ -23,28 +24,11 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
-    SYNPhotoPickerViewController *picker = [[SYNPhotoPickerViewController alloc] initWithTitle:@"NEW TITLE"
-                                                                                       options:SYNPhotoPickerCameraRoll | SYNPhotoPickerWebSearch];
+    picker = [[SYNPhotoPickerViewController alloc] initWithTitle:@"NEW TITLE"
+                                                         options:SYNPhotoPickerCameraRoll | SYNPhotoPickerWebSearch];
+    picker.delegate = self;
     
-    [picker setFinalizationBlock:^(SYNPhotoPickerViewController *picker, NSError *err, NSArray *data) {
-        if (err) {
-            NSLog(@"Error: %@", err.localizedDescription);
-            return;
-        }
-        
-        NSLog(@"Returned values: %@", data);
-        
-        [picker dismissViewControllerAnimated:YES completion:nil];
-    }];
-    
-    [picker setWebsearchBlock:^(NSString *searchText) {
-        // Use this area to connect your web search service
-        NSLog(@"Searching web for %@", searchText);
-    }];
-    
-    // Pass the results of your webservice search results to the picker
-    [self addImages:@[@"http://www.syntertainment.com/img/splash-logo.png"] toPicker:picker forOption:SYNPhotoPickerWebSearch];
-    
+    [picker addImageURLs:@[@"http://www.syntertainment.com/img/splash-logo.png"] forOption:SYNPhotoPickerWebSearch];
     
     // Change the Text and image for an option
     [picker customTitle:@"CAMERA" customImage:[UIImage imageNamed:@"editor-camera-tool-black.png"] forOption:SYNPhotoPickerCameraRoll];
@@ -53,15 +37,31 @@
     [self presentViewController:picker animated:YES completion:nil];
 }
 
-- (void)addImages:(NSArray *)images toPicker:(SYNPhotoPickerViewController *)picker forOption:(SYNPhotoPickerOptions)option
-{
-    [picker addImageURLs:images forOption:option];
-}
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - SYNPhotoPickerDelegates
+
+- (void)didSelectItemForIndexPath:(NSIndexPath *)indexpath forOption:(SYNPhotoPickerOptions)option
+{
+    NSLog(@"Selected item at index path: %ld", (long)indexpath.row);
+    
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)didSelectAssetLibraryURL:(NSString *)assetURL
+{
+    NSLog(@"Selected photo with AssetURL: %@", assetURL);
+    
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)didSearchWithString:(NSString *)search
+{
+    NSLog(@"Searched for string: %@", search);
 }
 
 @end

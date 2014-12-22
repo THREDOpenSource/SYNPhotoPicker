@@ -25,13 +25,20 @@ typedef NS_OPTIONS(NSUInteger, SYNPhotoPickerOptions) {
     SYNPhotoPickerWebSearch = 1 << 2,
 };
 
+@protocol SYNPhotoPickerDelegate <NSObject>
+
+@required
+- (void)didSelectItemForIndexPath:(NSIndexPath *)indexpath forOption:(SYNPhotoPickerOptions)option;
+- (void)didSelectAssetLibraryURL:(NSString *)assetURL;
+- (void)didSearchWithString:(NSString *)search;
+
+@end
+
 @interface SYNPhotoPickerViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegate, UISearchBarDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITabBarDelegate>
 
-typedef void (^SYNPhotoPickerFinalizationBlock)(SYNPhotoPickerViewController *picker, NSError *err, NSArray *data);
 typedef void (^SYNPhotoPickerWebSearchBlock)(NSString *searchText);
 
-@property (nonatomic, strong) SYNPhotoPickerFinalizationBlock finalizationBlock;
-@property (nonatomic, strong) SYNPhotoPickerWebSearchBlock websearchBlock;
+@property (nonatomic, assign) id<SYNPhotoPickerDelegate> delegate;
 
 - (id)initWithTitle:(NSString *)title options:(SYNPhotoPickerOptions)options;
 

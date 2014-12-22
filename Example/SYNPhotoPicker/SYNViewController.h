@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <SYNPhotoPicker/SYNPhotoPickerViewController.h>
 
-@interface SYNViewController : UIViewController
+@interface SYNViewController : UIViewController <SYNPhotoPickerDelegate>
 
 @end
