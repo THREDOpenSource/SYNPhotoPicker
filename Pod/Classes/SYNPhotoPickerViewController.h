@@ -27,7 +27,7 @@ typedef NS_OPTIONS(NSUInteger, SYNPhotoPickerOptions) {
 
 @protocol SYNPhotoPickerDelegate <NSObject>
 
-@required
+@optional
 - (void)didSelectItemForIndexPath:(NSIndexPath *)indexpath forOption:(SYNPhotoPickerOptions)option;
 - (void)didSelectAssetLibraryURL:(NSString *)assetURL;
 - (void)didSearchWithString:(NSString *)search;
