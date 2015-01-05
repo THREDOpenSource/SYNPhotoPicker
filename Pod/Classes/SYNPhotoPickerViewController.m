@@ -46,6 +46,9 @@
     // Picker Mode
     unsigned long mode;
     
+    // Picker Mapping
+    NSMutableDictionary *mapping;
+    
     // UICollectionView arrays (Dictionary of arrays)
     NSMutableDictionary *content;
 }
@@ -76,17 +79,19 @@
         
         currentOptions = options;
         
+        mapping = NSMutableDictionary.new;
         content = NSMutableDictionary.new;
         
         NSMutableArray *pickerItems = NSMutableArray.new;
         
         if (currentOptions & SYNPhotoPickerCameraRoll) {
-            UITabBarItem *photos = [[UITabBarItem alloc] initWithTitle:@"PHOTOS" image:[UIImage imageNamed:@"camera-cameraroll.png"
+            UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:@"PHOTOS" image:[UIImage imageNamed:@"camera-cameraroll.png"
                                                                                                   inBundle:podBundle
                                                                              compatibleWithTraitCollection:nil]
                                                                    tag:SYNPhotoPickerCameraRoll];
             
-            [pickerItems addObject:photos];
+            [pickerItems addObject:item];
+            [mapping setObject:[NSNumber numberWithLong:pickerItems.count-1] forKey:[NSNumber numberWithInt:SYNPhotoPickerCameraRoll]];
             
             [content setObject:NSMutableArray.new forKey:[NSString stringWithFormat:@"%lu", (unsigned long)SYNPhotoPickerCameraRoll]];
             
@@ -94,23 +99,25 @@
         }
         
         if (currentOptions & SYNPhotoPickerCustomDataSource) {
-            UITabBarItem *photos = [[UITabBarItem alloc] initWithTitle:@"CUSTOM" image:[UIImage imageNamed:@"camera-cameraroll.png"
+            UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:@"CUSTOM" image:[UIImage imageNamed:@"camera-cameraroll.png"
                                                                                                   inBundle:podBundle
                                                                              compatibleWithTraitCollection:nil]
                                                                    tag:SYNPhotoPickerCustomDataSource];
             
-            [pickerItems addObject:photos];
+            [pickerItems addObject:item];
+            [mapping setObject:[NSNumber numberWithLong:pickerItems.count-1] forKey:[NSNumber numberWithInt:SYNPhotoPickerCustomDataSource]];
             
             [content setObject:NSMutableArray.new forKey:[NSString stringWithFormat:@"%lu", (unsigned long)SYNPhotoPickerCustomDataSource]];
         }
         
         if (currentOptions & SYNPhotoPickerWebSearch) {
-            UITabBarItem *photos = [[UITabBarItem alloc] initWithTitle:@"SEARCH" image:[UIImage imageNamed:@"editor-search.png"
+            UITabBarItem *item = [[UITabBarItem alloc] initWithTitle:@"SEARCH" image:[UIImage imageNamed:@"editor-search.png"
                                                                                                   inBundle:podBundle
                                                                              compatibleWithTraitCollection:nil]
                                                                    tag:SYNPhotoPickerWebSearch];
             
-            [pickerItems addObject:photos];
+            [pickerItems addObject:item];
+            [mapping setObject:[NSNumber numberWithLong:pickerItems.count-1] forKey:[NSNumber numberWithInt:SYNPhotoPickerWebSearch]];
             
             [content setObject:NSMutableArray.new forKey:[NSString stringWithFormat:@"%lu", (unsigned long)SYNPhotoPickerWebSearch]];
         }
@@ -125,7 +132,7 @@
 
 - (void)customTitle:(NSString *)title customImage:(UIImage *)image forOption:(SYNPhotoPickerOptions)option
 {
-    UITabBarItem *item = [self.pickerTabBar.items objectAtIndex:option-1];
+    UITabBarItem *item = [self.pickerTabBar.items objectAtIndex:[[mapping objectForKey:[NSNumber numberWithLong:option]] intValue]];
     item.title = title;
     item.image = image;
     item.selectedImage = image;
@@ -151,7 +158,7 @@
     
     mode = currentOptions & SYNPhotoPickerCameraRoll ?: currentOptions & SYNPhotoPickerWebSearch ?: currentOptions & SYNPhotoPickerCustomDataSource;
     
-    [self.pickerTabBar setSelectedItem:[self.pickerTabBar.items objectAtIndex:mode-1]];
+    [self.pickerTabBar setSelectedItem:[self.pickerTabBar.items objectAtIndex:[[mapping objectForKey:[NSNumber numberWithLong:mode]] intValue]]];
     
     [self toggleSearchBarVisibility];
 }
