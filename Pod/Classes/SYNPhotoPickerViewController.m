@@ -18,6 +18,7 @@
 
 @property (strong, nonatomic) NSURL *url;
 @property (strong, nonatomic) UIImageView *imageView;
+@property (strong, nonatomic) NSDate *creationDate;
 
 @end
 
@@ -365,7 +366,12 @@
     
     [library enumerateGroupsWithTypes:ALAssetsGroupAll usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
         if (!group)
+        {
+            // Complete! Order by time
+            [content setObject:[self sortAssetArrayByTime:photoArray asc:NO] forKey:[NSString stringWithFormat:@"%lu", (unsigned long)SYNPhotoPickerCameraRoll]];
+            
             return;
+        }
         
         [self addPhotosFromAssetGroup:group toArray:photoArray];
         
@@ -390,8 +396,25 @@
         SYNAssetImageData *data = SYNAssetImageData.alloc.init;
         data.url = result.defaultRepresentation.url;
         data.imageView = [[UIImageView alloc] initWithImage:[UIImage.alloc initWithCGImage:result.thumbnail]];
+        data.creationDate = [result valueForProperty:ALAssetPropertyDate];
         
         [photoArray addObject:data];
+    }];
+}
+
+#pragma mark - Order Photo Assets
+
+- (NSMutableArray *)sortAssetArrayByTime:(NSArray *)photoArray asc:(BOOL)asc
+{
+    return [photoArray sortedArrayUsingComparator:^NSComparisonResult(SYNAssetImageData *obj1, SYNAssetImageData *obj2) {
+        NSDate *t1 = obj1.creationDate;
+        NSDate *t2 = obj2.creationDate;
+        
+        if (asc) {
+            return [t1 compare:t2];
+        } else {
+            return [t2 compare:t1];
+        }
     }];
 }
 
