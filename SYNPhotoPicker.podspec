@@ -9,7 +9,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "SYNPhotoPicker"
-  s.version          = "1.0.0"
+  s.version          = “1.0.2”
   s.summary          = "SYNPhotoPicker is an easy to implement layout for choosing camera photos, web photos, and any other image collection."
   s.description      = <<-DESC
 SYNPhotoPicker allows you to quickly and easily implement a photo picker using a grid style UICollectionView. You can also specify other collections of images to be displayed as well as hook into outside search systems using the delegate method.
