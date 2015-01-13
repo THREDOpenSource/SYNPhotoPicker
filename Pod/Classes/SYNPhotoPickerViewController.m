@@ -406,7 +406,7 @@
 
 - (NSMutableArray *)sortAssetArrayByTime:(NSArray *)photoArray asc:(BOOL)asc
 {
-    return [photoArray sortedArrayUsingComparator:^NSComparisonResult(SYNAssetImageData *obj1, SYNAssetImageData *obj2) {
+    return (NSMutableArray *)[photoArray sortedArrayUsingComparator:^NSComparisonResult(SYNAssetImageData *obj1, SYNAssetImageData *obj2) {
         NSDate *t1 = obj1.creationDate;
         NSDate *t2 = obj2.creationDate;
         
